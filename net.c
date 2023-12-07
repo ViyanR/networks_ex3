@@ -105,12 +105,18 @@ static void lb_in(struct rte_mbuf *pkt_buf)
 		pkt_buf, struct rte_ipv4_hdr *, sizeof(struct rte_ether_hdr));
 
 	/* FIXME: Use the get_target_ip function to get the target server IP */
+	uint32_t target_ip = get_target_ip(ntohl(iph->src_addr), ntohs(iph->src_port), ntohs(iph->dst_port));
 
 	/* FIXME: Set the src and destination IPs */
+	iph->src_addr = htonl(local_ip); // Replace with the source IP of the load balancer
+    iph->dst_addr = htonl(target_ip);
 
 	/* FIXME: Fix the tcp and ip checksums */
+	pkt_buf->ol_flags |= PKT_TX_IPV4 | PKT_TX_IP_CKSUM; // Enable IPv4 and IP checksum offload
+    pkt_buf->ol_flags |= PKT_TX_TCP_CKSUM;             // Enable TCP checksum offload
 
 	/* Send the packet out */
+    eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr));
 }
 
 void eth_in(struct rte_mbuf *pkt_buf)
