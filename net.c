@@ -77,7 +77,16 @@ static uint32_t get_target_ip(uint32_t src_ip, uint16_t src_port,
 							  uint16_t dst_port)
 {
 	/* FIXME: Implement the load balancing policy here */
-	return targets[0];
+	/* If src_ip is 10.0.0.10, then perform hash of src_ip, src_port, dst_port since these
+		are the only three fields which change.Then use hash to choose target ip from targets array*/
+	/* If src_ip is 10.0.0.2 or 10.0.0.3*/
+	if (src_ip == 10.0.0.2 || src_ip == 10.0.0.3){
+		return 10.0.0.1;
+	} else {
+		hash_val = (src_ip + src_port + dst_port) % 2;
+		return targets[hash_val];
+	}
+	// return targets[0];
 }
 
 static void lb_in(struct rte_mbuf *pkt_buf)
