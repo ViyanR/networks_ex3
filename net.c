@@ -126,7 +126,8 @@ static void lb_in(struct rte_mbuf *pkt_buf)
 
 	/* Send the packet out */
     // eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr));
-    eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_tcp_hdr));
+    eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, get_mac_for_ip(target_ip), sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_tcp_hdr));
+    // &arph->arp_data.arp_tha
 
 }
 
