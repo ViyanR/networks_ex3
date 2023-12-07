@@ -113,20 +113,20 @@ static void lb_in(struct rte_mbuf *pkt_buf)
 	uint32_t target_ip = get_target_ip(ntohl(iph->src_addr), ntohs(rte_be_to_cpu_16(tcph->src_port)), ntohs(rte_be_to_cpu_16(tcph->dst_port)));
 	printf(target_ip);
 	/* FIXME: Set the src and destination IPs */
-	iph->src_addr = htonl(local_ip); // Replace with the source IP of the load balancer
+	iph->src_addr = htonl(local_ip);
     iph->dst_addr = htonl(target_ip);
 
 	/* FIXME: Fix the tcp and ip checksums */
 	// uint16_t tcp_offset = sizeof(struct rte_ether_hdr) + sizeof(struct rte_ipv4_hdr);
  //    struct rte_tcp_hdr *tcph = rte_pktmbuf_mtod_offset(pkt_buf, struct rte_tcp_hdr *, tcp_offset);
- //    tcph->cksum = 0;  // Reset checksum field before recalculation
- //    tcph->cksum = rte_ipv4_udptcp_cksum(iph, tcph);
+    tcph->cksum = 0;
+    tcph->cksum = rte_ipv4_udptcp_cksum(iph, tcph);
 	// pkt_buf->ol_flags |= PKT_TX_IPV4 | PKT_TX_IP_CKSUM; // Enable IPv4 and IP checksum offload
  //    pkt_buf->ol_flags |= PKT_TX_TCP_CKSUM;             // Enable TCP checksum offload
 
 	/* Send the packet out */
     // eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr));
-    // eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_tcp_hdr));
+    eth_out(pkt_buf, RTE_ETHER_TYPE_IPV4, &target_eth_addr, sizeof(struct rte_ipv4_hdr) + sizeof(struct rte_tcp_hdr));
 
 }
 
